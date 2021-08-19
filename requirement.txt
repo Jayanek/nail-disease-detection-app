@@ -1,0 +1,10 @@
+numpy
+tensorflow
+tensorflow_hub
+PIL
+io
+fastapi
+uvicorn
+gunicorn==19.9.0
+uvloop
+httptools
