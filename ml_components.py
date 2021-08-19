@@ -28,6 +28,7 @@ def predict(image: Image.Image):
     result = model.predict(pre_processed_image)
 	# get the softmax probabilities
     score = tf.nn.softmax(result)
+    print(score)
     # select max probability class
     response = np.argmax(score)
     return target_names[response]

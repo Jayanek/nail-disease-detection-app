@@ -21,7 +21,7 @@ async def predict_api(file: UploadFile = File(...)):
         return "Image must be jpg or png format!"
     image = read_imagefile(await file.read())
     prediction = predict(image)
-    return prediction
+    return {"prediction":prediction}
 
 
 # 5. Run the API with uvicorn
