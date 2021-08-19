@@ -1,7 +1,7 @@
 numpy
 tensorflow
 tensorflow_hub
-PIL
+Pillow
 io
 fastapi
 uvicorn
