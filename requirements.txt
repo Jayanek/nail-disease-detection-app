@@ -2,7 +2,6 @@ numpy
 tensorflow
 tensorflow_hub
 Pillow
-io
 fastapi
 uvicorn
 gunicorn==19.9.0
