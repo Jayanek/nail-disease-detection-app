@@ -2,7 +2,7 @@
 import uvicorn ##ASGI
 from fastapi import FastAPI, File, UploadFile
 
-from ml_components import predict
+from ml_components import predict_nail_type, predict_nail_shape
 from api_components import read_imagefile
 
 
@@ -14,13 +14,22 @@ app = FastAPI()
 def index():
     return {'message': 'Hello, World'}
 
-@app.post("/predict/image")
+@app.post("/predict/nail_type")
 async def predict_api(file: UploadFile = File(...)):
     extension = file.filename.split(".")[-1] in ("jpg", "jpeg", "png", "PNG")
     if not extension:
         return "Image must be jpg or png format!"
     image = read_imagefile(await file.read())
-    prediction = predict(image)
+    prediction = predict_nail_type(image)
+    return {"prediction":prediction}
+
+@app.post("/predict/nail_shape")
+async def predict_api(file: UploadFile = File(...)):
+    extension = file.filename.split(".")[-1] in ("jpg", "jpeg", "png", "PNG")
+    if not extension:
+        return "Image must be jpg or png format!"
+    image = read_imagefile(await file.read())
+    prediction = predict_nail_shape(image)
     return {"prediction":prediction}
 
 

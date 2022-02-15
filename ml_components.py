@@ -1,19 +1,27 @@
 import tensorflow as tf
-# import tensorflow_hub as hub custom_objects={'KerasLayer':hub.KerasLayer}
+import tensorflow_hub as hub
 import numpy as np
 from tensorflow.keras.applications import EfficientNetB2
 from tensorflow.keras.models import load_model
 from PIL import Image
 
 
-target_names=['terry\'s nail','beau\'s lines','splinter hemmorrage','yellow nails','healthy nails']
+nail_types=['terry\'s nail','beau\'s lines','splinter hemmorrage','yellow nails','healthy nails']
 
-def load_the_model():
-    model = load_model('model_l48_a838.h5')
-    print("Model loaded")
+nail_shapes=['clubbing','koilonychia','healthy_nails']
+
+def load_the_nail_type_model():
+    model = load_model('./models/model_l48_a838.h5')
+    print("Model nail type loaded...")
     return model
 
-model = load_the_model()
+def load_the_nail_shape_model():
+    model = load_model('./models/mobile_net.h5', custom_objects={'KerasLayer':hub.KerasLayer})
+    print("Model nail shape loaded...")
+    return model
+
+nail_type_model = load_the_nail_type_model()
+nail_shape_model = load_the_nail_shape_model()
 
 
 def image_preprocess(image: Image.Image)-> Image.Image:
@@ -23,12 +31,26 @@ def image_preprocess(image: Image.Image)-> Image.Image:
 	return image
 
 
-def predict(image: Image.Image):
+def predict_nail_type(image: Image.Image):
     pre_processed_image = image_preprocess(image)
-    result = model.predict(pre_processed_image)
+    result = nail_type_model.predict(pre_processed_image)
+    
 	# get the softmax probabilities
     score = tf.nn.softmax(result)
     print(score)
     # select max probability class
     response = np.argmax(score)
-    return target_names[response]
+    return nail_types[response]
+
+
+def predict_nail_shape(image: Image.Image):
+    # pre-processed image normalize by / 255
+    pre_processed_image = image_preprocess(image)/255
+    result = nail_shape_model.predict(pre_processed_image)
+	# get the softmax probabilities
+    print(result)
+    score = tf.nn.softmax(result)
+    print(score)
+    # select max probability class
+    response = np.argmax(score)
+    return nail_shapes[response]
