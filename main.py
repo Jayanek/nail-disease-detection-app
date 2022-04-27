@@ -1,8 +1,8 @@
 # import libararies
 import uvicorn ##ASGI
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 
-from ml_components import predict_nail_type, predict_nail_shape
+from ml_components import predict_nail_type, predict_nail_shape, confirm_hear_disease
 from api_components import read_imagefile
 
 
@@ -31,6 +31,13 @@ async def predict_api(file: UploadFile = File(...)):
     image = read_imagefile(await file.read())
     prediction = predict_nail_shape(image)
     return {"prediction":prediction}
+
+@app.post("/confirm/diabetes")
+async def confirm_bedibts(pregnancies: int = Form(...), glucose: int = Form(...),bloodPressure: int = Form(...),insulin: int = Form(...),bmi: float = Form(...),age: int = Form(...)):
+    print(pregnancies, glucose,bloodPressure,insulin,bmi,age)
+    result = confirm_hear_disease(pregnancies, glucose,bloodPressure,insulin,bmi,age)
+    print(result[0])
+    return {"prediction": False if result[0] == 0 else True}
 
 
 # 5. Run the API with uvicorn
