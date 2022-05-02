@@ -3,9 +3,10 @@ import uvicorn ##ASGI
 from fastapi import FastAPI, File, UploadFile, Form
 
 from ml_components import predict_nail_type, predict_nail_shape, confirm_hear_disease
-from api_components import read_imagefile
+from api_components import read_imagefile,crop_n_save
+from yolo3.yolo_detection_images import object_det
 
-
+#'./yolov3/yolo_detection_images'
 # 2. Create the app object
 app = FastAPI()
 
@@ -38,6 +39,19 @@ async def confirm_bedibts(pregnancies: int = Form(...), glucose: int = Form(...)
     result = confirm_hear_disease(pregnancies, glucose,bloodPressure,insulin,bmi,age)
     print(result[0])
     return {"prediction": False if result[0] == 0 else True}
+
+
+@app.post("/detect/object")
+async def predict_api(file: UploadFile = File(...)):
+    extension = file.filename.split(".")[-1] in ("jpg", "jpeg", "png", "PNG")
+    if not extension:
+        return "Image must be jpg or png format!"
+    image = read_imagefile(await file.read())
+    paths = crop_n_save(object_det(image),image)
+    print(paths)
+    prediction = 'hello'
+    return {"prediction":paths}
+
 
 
 # 5. Run the API with uvicorn
